@@ -161,6 +161,46 @@ export interface IOrderResult {
 - `offAll()` - удалить все обработчики событий 
 - `trigger(eventName: string, context?: Partial<T>)` - возвращает функцию, генерирующую событие при вызове
 
+#### Класс Component
+Базовый класс для представлений. Работает с дженериками. В конструкторе принимает элемент разметки, который будет заполняться данными из модели.
+
+Основные методы:
+```
+  // Переключить класс
+  toggleClass(element: HTMLElement, className: string, force?: boolean): void;
+
+  // Установить текстовое содержимое
+  protected setText(element: HTMLElement, value: string): void;
+
+  // Сменить статус блокировки
+  setDisabled(element: HTMLElement, state: boolean): void;
+
+  // Скрыть
+  protected setHidden(element: HTMLElement): void;
+
+  // Показать
+  protected setVisible(element: HTMLElement): void;
+
+  // Установить изображение с алтернативным текстом
+  protected setImage(el: HTMLImageElement, src: string, alt?: string): void;
+
+  // Вернуть корневой DOM-элемент
+  render(data?: Partial<T>): HTMLElement;
+}
+```
+
+#### Класс Model
+
+Родительский класс модели данных, работает с дженериками
+
+Конструктор:
+- `constructor(data: Partial<T>, protected events: IEvents)` - принимает данные выбранного нами типа(возможно неполные) и экземпляр IEvents для работы с событиями
+
+Основные методы:
+
+- `emitChanges(event: string, payload?: object)` - сообщает всем, что модель изменилась. Принимает на вход событие и данные, которые изменились
+
+
 ### Слой данных
 #### Класс IAppState
 Интерфейс, описывающий внутреннее состояние приложения\
@@ -190,36 +230,7 @@ interface IAppState {
 
 ### Классы представления
 Все классы представления отвечают за отображение внутри контейнера (DOM-элемент) передаваемых в них данных.
-#### Класс Component
-Базовый компонент
-Абстрактный базовый класс, предназначенным для создания компонентов пользовательского интерфейса. Класс обеспечивает инструментарий для управления DOM элементами и поведением компонента. Наследуется всеми классами представления(View)
-```
-abstract class Component<T> {
-  // Конструктор принимает родительский элемент
-  protected constructor(protected readonly container: HTMLElement);
 
-  // Переключить класс
-  toggleClass(element: HTMLElement, className: string, force?: boolean): void;
-
-  // Установить текстовое содержимое
-  protected setText(element: HTMLElement, value: string): void;
-
-  // Сменить статус блокировки
-  setDisabled(element: HTMLElement, state: boolean): void;
-
-  // Скрыть
-  protected setHidden(element: HTMLElement): void;
-
-  // Показать
-  protected setVisible(element: HTMLElement): void;
-
-  // Установить изображение с алтернативным текстом
-  protected setImage(el: HTMLImageElement, src: string, alt?: string): void;
-
-  // Вернуть корневой DOM-элемент
-  render(data?: Partial<T>): HTMLElement;
-}
-```
 
 Класс, описывающий главную страницу
 ```
