@@ -1,3 +1,5 @@
+import { CategoryMapping } from '../types';
+
 export function pascalToKebab(value: string): string {
     return value.replace(/([a-z0–9])([A-Z])/g, "$1-$2").toLowerCase();
 }
@@ -133,3 +135,23 @@ export function createElement<
     }
     return element;
 }
+
+export function handlePrice(price: number): string {
+    const priceStr = price.toString();
+    return priceStr.length < 5
+      ? priceStr
+      : priceStr
+        .split('')
+        .reverse()
+        .map((s, i) => ((i + 1) % 3 === 0 ? ' ' + s : s))
+        .reverse()
+        .join('');
+  }
+
+  export const categoryMapping: CategoryMapping = {
+    другое: 'card__category_other',
+    'софт-скил': 'card__category_soft',
+    дополнительное: 'card__category_additional',
+    кнопка: 'card__category_button',
+    'хард-скил': 'card__category_hard',
+  };
