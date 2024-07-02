@@ -34,14 +34,14 @@ export class Form<T> extends Component<IFormState> {
   }
 
   protected onInputChange(field: keyof T, value: string) {
-    this.events.emit('orderInput:change', {
-      field,
-      value,
-    })
-  }
+    this.events.emit(`${this.container.name}.${String(field)}:change`, {
+        field,
+        value
+    });
+}
 
   set valid(value: boolean) {
-    this._submit.disabled = !value;
+    this.setDisabled(this._submit,!value);
   }
 
   set errors(value: string) {

@@ -40,7 +40,8 @@ export class AppState extends Model<IAppState> {
   }
 
   deleteFromBasket(id: string) {
-    this.basket = this.basket.filter(item => item.id !== id)
+    this.basket = this.basket.filter(item => item.id !== id);
+    this.emitChanges('basket:open');
   }
 
   clearBasket() {
@@ -55,7 +56,14 @@ export class AppState extends Model<IAppState> {
     this.order.items = this.basket.map(item => item.id)
   }
 
-  setOrderField(field: keyof Omit<IOrder, 'items' | 'total'>, value: string) {
+  isFirstFormFill() {
+    if (this.order === null) {
+        return false;
+    }
+    return this.order.address && this.order.payment;
+}
+
+  setOrderField(field: keyof IOrderForm, value: string) {
     this.order[field] = value;
     if (this.validateOrder(field)) {
         this.events.emit('order:ready', this.order);

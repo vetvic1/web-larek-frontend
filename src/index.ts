@@ -138,15 +138,30 @@ events.on('basket:delete', (item: Product) => {
 
 // Оформить заказ
 events.on('basket:order', () => {
-  modal.render({
-    content: order.render(
-      {
-        address: '',
-        valid: false,
-        errors: []
-      }
-    ),
-  });
+  if (!appData.isFirstFormFill()) {
+    const data = {
+        address: ''
+    };
+    modal.render({
+        content: order.render({
+            valid: false,
+            errors: [],
+            ...data
+        })
+    });
+} else {
+    const data = {
+        phone: '',
+        email: ''
+    };
+    modal.render({
+        content: contacts.render({
+            valid: false,
+            errors: [],
+            ...data
+        }),
+    });
+}
 });
 
 // Изменилось состояние валидации заказа
@@ -164,7 +179,7 @@ events.on('contactsFormErrors:change', (errors: Partial<IOrderForm>) => {
 });
 
 // Изменились введенные данные
-events.on('orderInput:change', (data: { field: keyof IOrderForm, value: string }) => {
+events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }) => {
   appData.setOrderField(data.field, data.value);
 });
 
