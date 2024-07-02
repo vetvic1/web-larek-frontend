@@ -63,7 +63,7 @@ export class Card extends Component<ICard> {
 
   // Сеттер и гетер для названия
   set title(value: string) {
-    this._title.textContent = value;
+    this.setText(this._title, value);
   }
   get title(): string {
     return this._title.textContent || '';
@@ -77,23 +77,24 @@ export class Card extends Component<ICard> {
   // Сеттер для определения выбрали товар или нет
   set selected(value: boolean) {
     if (!this._button.disabled) {
-      this._button.disabled = value;
+      this.setDisabled(this._button, value);
     }
   }
 
   // Сеттер для цены
   set price(value: number | null) {
-    this._price.textContent = value
-      ? handlePrice(value) + ' синапсов'
-      : 'Бесценно';
+    this._price.textContent = value 
+      ? handlePrice(value) + ' синапсов' 
+      : 'Бесценно'; 
     if (this._button && !value) {
-      this._button.disabled = true;
+      this.setDisabled(this._button, true);
     }
   }
-
+  
+  
   // Сеттер для категории
   set category(value: CategoryType) {
-    this._category.textContent = value;
+    this.setText(this._category, value);
     this._category.classList.add(categoryMapping[value]);
   }
 }
@@ -114,6 +115,6 @@ export class StoreItemPreview extends Card {
   }
 
   set description(value: string) {
-    this._description.textContent = value;
+    this.setText(this._description, value);
   }
 }

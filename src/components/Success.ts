@@ -1,5 +1,5 @@
-import { handlePrice } from '../../utils/utils';
-import { Component } from '../base/Component';
+import { handlePrice } from '../utils/utils';
+import { Component } from './base/Component';
 
 interface ISuccessActions {
   onClick: (event: MouseEvent) => void;

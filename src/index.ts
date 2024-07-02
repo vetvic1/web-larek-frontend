@@ -8,10 +8,10 @@ import { AppState, Product } from './components/AppData';
 import { ensureElement, cloneTemplate } from './utils/utils';
 import { ApiResponse, IOrderForm, IProduct } from './types';
 import { API_URL } from './utils/constants';
-import { Basket, StoreItemBasket } from './components/common/Basket';
-import { Order } from './components/Order';
-import { Contacts } from './components/Contacts';
-import { Success } from './components/common/Success';
+import { Basket, StoreItemBasket } from './components/Basket';
+import { OrderForm } from './components/Order';
+import { ContactsForm } from './components/Contacts';
+import { Success } from './components/Success';
 
 const api = new Api(API_URL);
 const events = new EventEmitter();
@@ -35,8 +35,8 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
 // Переиспользуемые компоненты
 const basket = new Basket('basket', cloneTemplate(basketTemplate), events);
-const order = new Order('order', cloneTemplate(orderTemplate), events)
-const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
+const order = new OrderForm('order', cloneTemplate(orderTemplate), events)
+const contacts = new ContactsForm(cloneTemplate(contactsTemplate), events);
 const success = new Success('order-success', cloneTemplate(successTemplate), {
   onClick: () => {
     events.emit('modal:close')
@@ -112,6 +112,7 @@ events.on('basket:open', () => {
     );
     return storeItem.render({
       title: item.title,
+      id: item.id,
       price: item.price,
       index: index + 1,
     });
@@ -130,10 +131,9 @@ events.on('basket:delete', (item: Product) => {
   item.selected = false;
   basket.price = appData.getTotalBasketPrice();
   page.counter = appData.getBasketAmount();
-  basket.refreshIndices();
-  if (!appData.basket.length) {
-    basket.disableButton();
-  }
+  if (!appData.basket.length) { 
+    basket.disableButton(); 
+  }   
 })
 
 // Оформить заказ

@@ -1,24 +1,14 @@
 import { IEvents } from './base/events';
 import { Form } from './common/Form';
-
-/*
-  * Интерфейс, описывающий окошко заказа товара
-  * */
-export interface IOrder {
-  // Адрес
-  address: string;
-
-  // Способ оплаты
-  payment: string;
-}
-
+import { IOrder } from "../types";
 /*
   * Класс, описывающий окошко заказа товара
   * */
-export class Order extends Form<IOrder> {
+export class OrderForm extends Form<IOrder> {
   // Сссылки на внутренние элементы
-  protected _card: HTMLButtonElement;
-  protected _cash: HTMLButtonElement;
+  private _card: HTMLButtonElement;
+  private _cash: HTMLButtonElement; 
+  private _address: HTMLInputElement; 
 
   // Конструктор принимает имя блока, родительский элемент и обработчик событий
   constructor(
@@ -29,27 +19,47 @@ export class Order extends Form<IOrder> {
     super(container, events);
 
     this._card = container.elements.namedItem('card') as HTMLButtonElement;
-    this._cash = container.elements.namedItem('cash') as HTMLButtonElement;
+    this._cash = container.elements.namedItem('cash') as HTMLButtonElement; 
+    this._address = container.querySelector<HTMLInputElement>('input[name="address"]');
+    this._card.addEventListener('click', () => this.togglePaymentMethod('card'));
+    this._cash.addEventListener('click', () => this.togglePaymentMethod('cash'));
+  }   
 
-    if (this._cash) {
-      this._cash.addEventListener('click', () => {
-        this._cash.classList.add('button_alt-active')
-        this._card.classList.remove('button_alt-active')
-        this.onInputChange('payment', 'cash')
-      })
+    toggleCard(state: boolean = true) {
+      this.toggleClass(this._card, 'button_alt-active', state);
     }
-    if (this._card) {
-      this._card.addEventListener('click', () => {
-        this._card.classList.add('button_alt-active')
-        this._cash.classList.remove('button_alt-active')
-        this.onInputChange('payment', 'card')
-      })
+
+    toggleCash(state: boolean = true) {
+      this.toggleClass(this._cash, 'button_alt-active', state);
     }
+
+    togglePaymentMethod(selectedPayment: string) {
+      const isCardActive = this._card.classList.contains('button_alt-active');
+      const isCashActive = this._cash.classList.contains('button_alt-active');
+
+      if (selectedPayment === 'card') {
+          this.toggleCard(!isCardActive);
+          this.payment = isCardActive ? null : 'card';
+          if (!isCardActive) this.toggleCash(false);
+      } else if (selectedPayment === 'cash') {
+          this.toggleCash(!isCashActive);
+          this.payment = isCashActive ? null : 'cash';
+          if (!isCashActive) this.toggleCard(false);
+      }
   }
+  
 
   // Метод, отключающий подсвечивание кнопок
   disableButtons() {
-    this._cash.classList.remove('button_alt-active')
-    this._card.classList.remove('button_alt-active')
+    this.toggleCard(false);
+    this.toggleCash(false);
+  }
+
+  set address(value: string) {
+    this._address.value = value;
+  }
+
+  set payment(value: string) {
+    this.events.emit('order:setPaymentType', { paymentType: value });
   }
 }

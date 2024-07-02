@@ -19,24 +19,30 @@ export class Api {
         };
     }
 
-    protected async handleResponse(response: Response): Promise<Partial<object>> {
+    protected async handleResponse(response: Response): Promise<object> {
         if (response.ok) return response.json();
         else return response.json()
             .then(data => Promise.reject(data.error ?? response.statusText));
     }
 
-    async get(uri: string) {
-        return fetch(this.baseUrl + uri, {
+    get(uri: string) {
+        return this._request(uri, {
             ...this.options,
             method: 'GET'
-        }).then(this.handleResponse);
+        });
     }
 
-    async post(uri: string, data: object, method: ApiPostMethods = 'POST') {
-        return fetch(this.baseUrl + uri, {
+    post(uri: string, data: object, method: ApiPostMethods = 'POST') {
+        return this._request(uri, {
             ...this.options,
             method,
             body: JSON.stringify(data)
-        }).then(this.handleResponse);
+        });
     }
+
+    async _request(url: string, options: RequestInit) {
+        const response = await fetch(this.baseUrl + url, options);
+        return this.handleResponse(response);
+    }
+
 }

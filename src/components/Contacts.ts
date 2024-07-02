@@ -15,12 +15,27 @@ export interface IContacts {
 /*
   * Класс, описывающий окошко контакты
   * */
-export class Contacts extends Form<IContacts> {
+export class ContactsForm extends Form<IContacts> {
   // Конструктор принимает родительский элемент и обработчик событий
-  constructor(
-    container: HTMLFormElement,
-    events: IEvents
-  ) {
-    super(container, events);
+  protected _inputPhone: HTMLInputElement;
+  protected _inputEmail: HTMLInputElement;
+
+  constructor(container: HTMLFormElement, events: IEvents) {
+      super(container, events);
+
+      this._inputPhone = container.querySelector<HTMLInputElement>('input[name="phone"]');
+      this._inputEmail = container.querySelector<HTMLInputElement>('input[name="email"]');
+  }
+
+  set phone(value: string) {
+      if (this._inputPhone) {
+          this._inputPhone.value = value;
+      }
+  }
+
+  set email(value: string) {
+      if (this._inputEmail) {
+          this._inputEmail.value = value;
+      }
   }
 }
