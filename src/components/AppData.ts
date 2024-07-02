@@ -56,47 +56,52 @@ export class AppState extends Model<IAppState> {
     this.order.items = this.basket.map(item => item.id)
   }
 
-  isFirstFormFill() {
-    if (this.order === null) {
-        return false;
-    }
-    return this.order.address && this.order.payment;
-}
-
   setOrderField(field: keyof IOrderForm, value: string) {
     this.order[field] = value;
-    if (this.validateOrder(field)) {
-        this.events.emit('order:ready', this.order);
+
+    if (this.validateContacts(field)) {
+    this.events.emit('contacts:ready', this.order)
+    }
+    if (this.validateOrder()) {
+    this.events.emit('order:ready', this.order);
     }
   }
 
-  validateOrder(field: keyof IOrder) {
-    const errors: Partial<Record<keyof IOrder, string>> = {};
-
-    // Проверка для полей email и phone
+  validateContacts(field: keyof IOrder) {
+    const errors: typeof this.formErrors = {};
     if (field === 'email' || field === 'phone') {
-        const emailError = !this.order.email.match(/^\S+@\S+\.\S+$/)
-            ? 'email'
-            : '';
-        const phoneError = !this.order.phone.match(/^\+7\d{10}$/)
-            ? 'телефон'
-            : '';
+      const emailError = !this.order.email.match(/^\S+@\S+\.\S+$/)
+          ? 'email'
+          : '';
+      const phoneError = !this.order.phone.match(/^\+7\d{10}$/)
+          ? 'телефон'
+          : '';
 
-        if (emailError && phoneError) {
-            errors.email = `Необходимо указать ${emailError} и ${phoneError}`;
-        } else if (emailError) {
-            errors.email = `Необходимо указать ${emailError}`;
-        } else if (phoneError) {
-            errors.phone = `Необходимо указать ${phoneError}`;
-        }
-    } else if (!this.order.address) errors.address = 'Необходимо указать адрес';
-    else if (!this.order.payment)
-        errors.address = 'Необходимо выбрать тип оплаты';
+      if (emailError && phoneError) {
+          errors.email = `Необходимо указать ${emailError} и ${phoneError}`;
+      } else if (emailError) {
+          errors.email = `Необходимо указать ${emailError}`;
+      } else if (phoneError) {
+          errors.phone = `Необходимо указать ${phoneError}`;
+      }
+    }
+    this.formErrors = errors;
+    this.events.emit('contactsFormErrors:change', this.formErrors);
+    return Object.keys(errors).length === 0;
+  }
 
+  validateOrder() {
+    const errors: typeof this.formErrors = {};
+    if (!this.order.address) {
+     errors.address = 'Необходимо указать адрес';
+    }
+    if (!this.order.payment) {
+     errors.payment = 'Необходимо указать способ оплаты';
+    }
     this.formErrors = errors;
     this.events.emit('orderFormErrors:change', this.formErrors);
     return Object.keys(errors).length === 0;
-}
+  }
 
   refreshOrder() {
     this.order = {

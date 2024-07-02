@@ -131,7 +131,9 @@ export interface IOrderResult {
 
 #### Класс Api
 
-Содержит в себе базовую логику отправки запросов. В конструктор передается базовый адрес сервера и опциональный объект с заголовками запросов.
+Содержит в себе базовую логику отправки запросов. 
+
+- `constructor(baseUrl: string, options: RequestInit = {})`- принимает базовый URL и глобальные опции для всех запросов(опционально).
 
 Методы:
 
@@ -211,49 +213,71 @@ export interface IOrderResult {
   resetSelected(): void; // Метод для обновления поля selected во всех товарах после совершения покупки
 ```
 
-### Классы представления
+### Классы представлений
 
-Все классы представления отвечают за отображение внутри контейнера (DOM-элемент) передаваемых в них данных.
+#### Интерфейс IModalData
 
-Класс, описывающий главную страницу
+Представляет содержимое модального окна
 
 ```
-class Page extends Component<IPage> {
-  // Ссылки на внутренние элементы
-  protected _counter: HTMLElement;
-  protected _store: HTMLElement;
-  protected _wrapper: HTMLElement;
-  protected _basket: HTMLElement;
-
-  // Конструктор принимает родительский элемент и обработчик событий
-  constructor(container: HTMLElement, protected events: IEvents);
-
-  // Сеттер для счётчика товаров в корзине
-  set counter(value: number);
-
-  // Сеттер для карточек товаров на странице
-  set store(items: HTMLElement[]);
-
-  // Сеттер для блока прокрутки
-  set locked(value: boolean);
+interface IModalData {
+  content: HTMLElement - содержимое модального окна
 }
 ```
 
-Класс, описывающий карточку товара
+#### Класс Modal
+
+Общий класс для модальных окон
 
 ```
-class Card extends Component<ICard> {
-  // Ссылки на внутренние элементы карточки
-  protected _title: HTMLElement;
-  protected _image: HTMLImageElement;
-  protected _category: HTMLElement;
-  protected _price: HTMLElement;
-  protected _button: HTMLButtonElement;
+class Modal extends Component<IModalData> {
+  closeButton: HTMLButtonElement - кнопка закрытия
+  content: HTMLElement - содержимое модального окна
+}
+```
+- `constructor(container: HTMLElement, protected events: IEvents)` - Конструктор принимает на вход HTMLElement и IEvents для работы с событиями
 
-  // Конструктор принимает имя блока, родительский контейнер
-  // и объект с колбэк функциями
-  constructor(protected blockName: string, container: HTMLElement, actions?: ICardActions);
+Основные методы:
 
+- `set content` - установить содержимое модального окна
+- `open` - открыть модальное окно, добавляя класс видимости к container и эмитируя событие modal:open.
+- `close` - закрыть модальное окно, удаляя класс видимости из container, очищает содержимое и эмитирует событие modal:
+  close.
+
+#### Класс Form
+
+Общий класс для работы с формами, расширяет Component
+
+- `constructor(container: HTMLElement, protected events: IEvents)` - Конструктор принимает на вход HTMLElement и IEvents для работы с событиями
+
+Основные методы:
+
+- `onInputChange` - изменение значений полей ввода
+- `set valid` - активна ли кнопка отправки
+- `set errors` - установка текстов ошибок
+
+
+#### Класс Page
+
+Класс, описывающий главную страницу
+
+- `constructor(container: HTMLElement, protected events: IEvents)` - Конструктор принимает на вход HTMLElement и IEvents для работы с событиями
+
+Основные методы:
+
+- `set counter(value: number)`- Сеттер для счётчика товаров в корзине
+- `set store(items: HTMLElement[])` - Сеттер для карточек товаров на странице
+- `set locked(value: boolean)` - Сеттер для блока прокрутки
+  
+#### Класс Card
+
+Класс, описывающий карточку товара
+
+- `constructor(protected blockName: string, container: HTMLElement, actions?: ICardActions)` - Конструктор принимает имя блока, родительский контейнер и объект с колбэк функциями
+
+Основные методы:
+
+```
   // Сеттер и геттер для уникального ID
   set id(value: string);
   get id(): string;
@@ -273,21 +297,17 @@ class Card extends Component<ICard> {
 
   // Сеттер для категории
   set category(value: CategoryType);
-}
 ```
+
+#### Класс Basket
 
 Класс, описывающий корзину товаров
 
+- `constructor(protected blockName: string, container: HTMLElement, protected events: IEvents)` - Конструктор принимает имя блока, родительский элемент и обработчик событий
+
+Основные методы:
+
 ```
-export class Basket extends Component<IBasket> {
-  // Ссылки на внутренние элементы
-  protected _list: HTMLElement;
-  protected _price: HTMLElement;
-  protected _button: HTMLButtonElement;
-
-  // Конструктор принимает имя блока, родительский элемент и обработчик событий
-  constructor(protected blockName: string, container: HTMLElement, protected events: IEvents);
-
   // Сеттер для общей цены
   set price(price: number);
 
@@ -299,32 +319,33 @@ export class Basket extends Component<IBasket> {
 
   // Метод для обновления индексов таблички при удалении товара из корзины
   refreshIndices(): void;
-}
 ```
+#### Класс OrderForm
 
 Класс, описывающий окошко заказа товара
 
+- `constructor(protected blockName: string, container: HTMLElement, protected events: IEvents)` - Конструктор принимает имя блока, родительский элемент и обработчик событий
+
+Основные методы:
+
 ```
-export class Order extends Form<IOrder> {
-  // Сссылки на внутренние элементы
-  protected _card: HTMLButtonElement;
-  protected _cash: HTMLButtonElement;
-
-  // Конструктор принимает имя блока, родительский элемент и обработчик событий
-  constructor(protected blockName: string, container: HTMLFormElement, protected events: IEvents);
-
   // Метод, отключающий подсвечивание кнопок
   disableButtons(): void;
-}
 ```
+#### Класс Contacts
 
 Класс, описывающий окошко контакты
 
+- `constructor(protected blockName: string, container: HTMLElement, protected events: IEvents)` - Конструктор принимает имя блока, родительский элемент и обработчик событий
+
+Основные методы:
+
 ```
-export class Contacts extends Form<IContacts> {
-  // Конструктор принимает родительский элемент и обработчик событий
-  constructor(container: HTMLFormElement, events: IEvents);
-}
+// Сеттер для электронной почты
+set email(value: string) 
+
+// Сеттер для телефона
+set email(value: string) 
 ```
 
 ### Дополнительные классы
