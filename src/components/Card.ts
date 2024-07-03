@@ -76,26 +76,20 @@ export class Card extends Component<ICard> {
 
   // Сеттер для определения выбрали товар или нет
   set selected(value: boolean) {
-    if (!this._button.disabled) {
-      this.setDisabled(this._button, value);
-    }
+    this.setDisabled(this._button, value)
   }
 
   // Сеттер для цены
   set price(value: number | null) {
-    this._price.textContent = value 
-      ? handlePrice(value) + ' синапсов' 
-      : 'Бесценно'; 
-    if (this._button && !value) {
-      this.setDisabled(this._button, true);
-    }
+    this.setText(this._price, value ? handlePrice(value) + ' синапсов' : 'Бесценно');
+    this.setDisabled(this._button, !value);    
   }
   
   
   // Сеттер для категории
   set category(value: CategoryType) {
-    this.setText(this._category, value);
-    this._category.classList.add(categoryMapping[value]);
+      this.setText(this._category, value);
+      this.toggleClass(this._category, categoryMapping[value], true);  
   }
 }
 

@@ -31,6 +31,8 @@ export class Success extends Component<ISuccess> {
   }
 
   set description(value: number) {
-    this._description.textContent = 'Списано ' + handlePrice(value) + ' синапсов'
+    if (this._description) {
+      this.setText(this._description, 'Списано ' + handlePrice(value) + ' синапсов');
+    }
   }
 }
