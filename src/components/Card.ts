@@ -15,7 +15,7 @@ export interface ICard {
   description: string;
   image: string;
   price: number | null;
-  selected: boolean;
+  selected: boolean;  
 }
 
 export class Card extends Component<ICard> {
@@ -81,8 +81,7 @@ export class Card extends Component<ICard> {
 
   // Сеттер для цены
   set price(value: number | null) {
-    this.setText(this._price, value ? handlePrice(value) + ' синапсов' : 'Бесценно');
-    this.setDisabled(this._button, !value);    
+    this.setText(this._price, value ? handlePrice(value) + ' синапсов' : 'Бесценно');        
   }
   
   
@@ -104,7 +103,6 @@ export class StoreItemPreview extends Card {
 
   constructor(container: HTMLElement, actions?: ICardActions) {
     super('card', container, actions);
-
     this._description = container.querySelector(`.${this.blockName}__text`);
   }
 

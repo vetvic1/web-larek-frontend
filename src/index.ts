@@ -86,7 +86,7 @@ events.on('card:select', (item: Product) => {
       category: item.category,
       description: item.description,
       price: item.price,
-      selected: item.selected
+      selected: item.selected || !item.price
     }),
   });
 });

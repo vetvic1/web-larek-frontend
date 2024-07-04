@@ -39,6 +39,10 @@ export class AppState extends Model<IAppState> {
     this.basket.push(value);
   }
 
+  getBasket() {
+    return this.basket;
+  }
+
   deleteFromBasket(id: string) {
     this.basket = this.basket.filter(item => item.id !== id);
     this.emitChanges('basket:open');
